@@ -161,7 +161,7 @@ public class HomeViewController implements Initializable {
         boolean isWindows = false;
         if(System.getProperty("os.name").toLowerCase().contains("windows")){
             isWindows = true;
-            processBuilder.command("cmd", "/c", "ipconfig | findstr IPv4 Address");
+            processBuilder.command("cmd", "/c", "ipconfig | findstr IPv4");
         }else{
             processBuilder.command("/bin/sh", "-c", "ipconfig getifaddr en0");
         }
