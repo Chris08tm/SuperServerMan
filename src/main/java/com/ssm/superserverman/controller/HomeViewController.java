@@ -54,8 +54,6 @@ public class HomeViewController implements Initializable {
     @FXML
     private Label errorTextLabel;
 
-    @FXML
-    private CheckBox localhostCheck;
 
 
     private final String serverStoragePath= "ServerList.txt";
@@ -197,6 +195,10 @@ public class HomeViewController implements Initializable {
     }
 
     public void delete(){
+        if(selectedServer == null){
+            errorTextLabel.setText("Please select a server to delete");
+            return;
+        }
         deleteServer();
     }
 
