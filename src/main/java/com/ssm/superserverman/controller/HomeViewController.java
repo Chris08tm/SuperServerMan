@@ -158,8 +158,10 @@ public class HomeViewController implements Initializable {
 
     public void getLocalhostIp(){
         ProcessBuilder processBuilder = new ProcessBuilder();
+        boolean isWindows = false;
         if(System.getProperty("os.name").toLowerCase().contains("windows")){
-            processBuilder.command("cmd", "/c", "ipconfig | findstr /R \"IPv4 Address\"");
+            isWindows = true;
+            processBuilder.command("cmd", "/c", "ipconfig | findstr IPv4 Address");
         }else{
             processBuilder.command("/bin/sh", "-c", "ipconfig getifaddr en0");
         }
@@ -171,10 +173,18 @@ public class HomeViewController implements Initializable {
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
 
+            String ip = null;
             String line;
             if((line = reader.readLine()) != null) {
-                serverIpTextField.setText(line);
+                ip = line;
             }
+
+            if(isWindows){
+                ip = ip.split(":")[1];
+                ip = ip.replaceAll("\\s", "");
+            }
+
+            serverIpTextField.setText(ip);
 
             if (exitCode != 0) {
                 throw new IOException("Failed to delete the folder. Exit code: " + exitCode);
@@ -253,7 +263,7 @@ public class HomeViewController implements Initializable {
             serverNames.remove(selectedServer);
 
             // remove folder
-            deleteFolder("./" + selectedServer);
+            deleteFolder(selectedServer);
 
             bufferedReader.close();
             bufferedWriter.close();
@@ -276,9 +286,9 @@ public class HomeViewController implements Initializable {
     private void deleteFolder(String path){
         ProcessBuilder processBuilder = new ProcessBuilder();
         if(System.getProperty("os.name").toLowerCase().contains("windows")){
-            processBuilder.command("cmd.exe", "/c", "rd /s /q", path);
+            processBuilder.command("cmd.exe", "/c", "rmdir /s /q", path);
         }else{
-            processBuilder.command("rm", "-r", path);
+            processBuilder.command("rm", "-r", "./" +  path);
         }
 
         try {
